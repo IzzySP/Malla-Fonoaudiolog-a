@@ -3,16 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Malla Fonoaudiología UTAL</title>
-    <link rel="stylesheet" href="estilos.css">
+    <title>Malla Interactiva Fonoaudiología UTAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
     <h1>Malla Interactiva Fonoaudiología UTAL</h1>
     <div id="creditos">Créditos ECTS Aprobados: <span id="creditos-valor">0</span></div>
-    <div class="malla" id="malla"></div>
-
+    <div id="malla"></div>
     <script src="script.js"></script>
 </body>
 </html>
 
+/* estilos.css */
+body {
+    background-color: #faf5ff;
+    font-family: 'Pacifico', cursive;
+    margin: 0;
+    padding: 20px;
+    color: #6b21a8;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+#creditos {
+    font-size: 1.5em;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.semestre {
+    margin-bottom: 30px;
+    border: 2px solid #e9d5ff;
+    background: #f3e8ff;
+    border-radius: 20px;
+    padding: 15px;
+}
+
+.semestre h2 {
+    text-align: center;
+    color: #7e22ce;
+}
+
+.malla {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.curso {
+    background-color: #ede9fe;
+    border: 2px solid #c4b5fd;
+    border-radius: 12px;
+    padding: 10px;
+    width: 230px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.curso:hover {
+    transform: scale(1.02);
+}
+
+.bloqueado {
+    opacity: 0.5;
+    background-color: #e9d5ff;
+}
+
+.tachado label {
+    text-decoration: line-through;
+    color: #9f7aea;
+}
+
+/* script.js */
+const cursos = [
+    // Ejemplo inicial para primer semestre
+    { id: 'practica1', nombre: 'Práctica Clínica I', creditos: 4, requisitos: [], semestre: 'Primer Año - Semestre 1' },
+    { id: 'fundamentos', nombre: 'Fundamentos de Fonoaudiología', creditos: 5, requisitos: [], semestre: 'Primer Año - Semestre 1' },
+    // TODO: aquí continúan todos los ramos con sus requisitos y semestres
+];
+
+let creditos = 0;
+
+function actualizarCreditos() {
+    document.getElementById('creditos-valor').textContent = creditos.toFixed(1);
+}
+
+function crearMalla() {
+    const malla = document.getElementById('malla');
+    const semestres = {};
+
+    cursos.forEach(curso => {
+        if (!semestres[curso.semestre]) {
+            const divSemestre = document.createElement('div');
+            divSemestre.className = 'semestre';
+            divSemestre.id = curso.semestre.replace(/\s+/g, '');
+            divSemestre.innerHTML = `<h2>${curso.semestre}</h2><div class='malla' id='malla_${curso.semestre.replace(/\s+/g, '')}'></div>`;
+            malla.appendChild(divSemestre);
+            semestres[curso.semestre] = divSemestre.querySelector('.malla');
+        }
+        const div = document.createElement('div');
+        div.className = 'curso bloqueado';
+        div.id = curso.id;
+        div.innerHTML = `<input type='checkbox' id='chk_${curso.id}' disabled> <label for='chk_${curso.id}'>${curso.nombre} (${curso.creditos} ECTS)</label>`;
+        semestres[curso.semestre].appendChild(div);
+    });
+    desbloquearCursos();
+}
+
+function desbloquearCursos() {
+    cursos.forEach(curso => {
+        const cumpleRequisitos = curso.requisitos.every(req => document.getElementById(`chk_${req}`)?.checked);
+        const checkbox = document.getElementById(`chk_${curso.id}`);
+        const divCurso = document.getElementById(curso.id);
+        if (cumpleRequisitos) {
+            checkbox.disabled = false;
+            divCurso.classList.remove('bloqueado');
+        } else {
+            checkbox.disabled = true;
+            divCurso.classList.add('bloqueado');
+        }
+    });
+}
+
+document.addEventListener('change', e => {
+    if (e.target.type === 'checkbox') {
+        const curso = cursos.find(c => `chk_${c.id}` === e.target.id);
+        const divCurso = document.getElementById(curso.id);
+        if (e.target.checked) {
+            creditos += curso.creditos;
+            divCurso.classList.add('tachado');
+        } else {
+            creditos -= curso.creditos;
+            divCurso.classList.remove('tachado');
+        }
+        actualizarCreditos();
+        desbloquearCursos();
+    }
+});
+
+crearMalla();
+actualizarCreditos();
