@@ -1,1 +1,48 @@
+body {
+    background-color: #f8f0fc;
+    font-family: 'Pacifico', cursive;
+    margin: 0;
+    padding: 20px;
+    color: #5d3a9b;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+#malla {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.curso {
+    background-color: #e1d5e7;
+    border: 2px solid #a678b7;
+    border-radius: 15px;
+    padding: 15px;
+    width: 250px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.curso:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.bloqueado {
+    opacity: 0.5;
+    background-color: #d9cde7;
+}
+
+#creditos {
+    font-size: 1.5em;
+    text-align: center;
+    margin-bottom: 30px;
+}
 
